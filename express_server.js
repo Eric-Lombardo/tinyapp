@@ -38,7 +38,7 @@ app.post("/urls", (req, res) => {
   // update urlDatabase with {shortURL: longURL} with every post request
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  res.send(`OK here is your tinyURL: ${shortURL}`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
