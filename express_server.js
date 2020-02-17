@@ -1,6 +1,10 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
 const PORT = 8080;
+
+// for use with bodyParser = require("body-parser")
+app.use(bodyParser.urlencoded({extended: true}));
 
 // setting the view engine
 app.set("view engine", "ejs");
@@ -23,8 +27,15 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars)
 })
 
+// this path will take you to a form
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+// this will handle the post request from the /urls/new form
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("OK");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
