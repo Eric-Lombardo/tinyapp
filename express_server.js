@@ -35,7 +35,7 @@ app.get("/urls/new", (req, res) => {
 // this will handle the post request from the /urls/new form
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  res.send("OK");
+  res.send(`OK here is your tinyURL: ${generateRandomString()}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -51,3 +51,21 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
+
+
+
+
+
+// placeholder function to simulate a "unique" shortURL
+// function declaration to amke sure it gets hoisted to the top
+function generateRandomString() {
+  let alphaNumData = ["a", "b", "c", "d", "e", "f", 1, 2, 3, 4, 5, 6, 7];
+  let outputStr = "";
+
+  for (let i = 0; i < 6; i++) {
+    let randomCharacter = Math.floor(Math.random() * alphaNumData.length);
+    outputStr += alphaNumData[randomCharacter];
+  }
+
+  return outputStr;
+}
