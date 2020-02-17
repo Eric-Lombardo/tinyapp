@@ -35,7 +35,10 @@ app.get("/urls/new", (req, res) => {
 // this will handle the post request from the /urls/new form
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  res.send(`OK here is your tinyURL: ${generateRandomString()}`);
+  // update urlDatabase with {shortURL: longURL} with every post request
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.send(`OK here is your tinyURL: ${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
