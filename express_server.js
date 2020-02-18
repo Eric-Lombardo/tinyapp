@@ -1,7 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080;
+
+// for use with cookieParser = require("cookieParser")
+app.use(cookieParser());
 
 // for use with bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended: true}));
@@ -77,6 +81,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 })
 
+// this will handle the login post and COOOOKIES!!!!
+app.post("/login", (req, res) => {
+  let userInputUsername = req.body.username;
+  res.cookie("username", userInputUsername);
+  res.redirect("/urls");
+})
 
 
 app.listen(PORT, () => {
