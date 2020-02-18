@@ -41,9 +41,22 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// when editing the long url
+app.post("/urls/:shortURL/update", (req, res) => {
+  // let longURL = req.body.longURL
+  console.log(req.body);
+})
+
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
-  res.render("urls_show", templateVars);
+  let shortURL = req.params.shortURL;
+
+  if (urlDatabase[shortURL]) {
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
+    res.render("urls_show", templateVars);
+  } else {
+    res.send("That tiny URL isn't in our database");
+  }
+
 })
 
 // this shortURL will redirect you to the longURL
@@ -65,9 +78,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 })
 
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n")
-})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
