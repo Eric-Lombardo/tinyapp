@@ -39,7 +39,6 @@ app.get("/urls/new", (req, res) => {
 
 // this will handle the post request from the /urls/new form
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   // update urlDatabase with {shortURL: longURL} with every post request
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
