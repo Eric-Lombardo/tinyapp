@@ -12,20 +12,27 @@
     </div>
     
     <!-- header form  -->
-    <div class="input-group input-group-sm mb-3">
-      
+    
+    <% if (username === undefined) { %>
       <form method="POST" action="/login">
-        <% if (username === undefined) { %>
-          <input name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
+        <div class="input-group">
+          <input required name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
           <div class="input-group-append">
-            <button class="btn btn-outline-dark" type="submit">Login</button>
+            <button class="btn btn-dark text-white btn-outline-dark" type="submit">Login</button>
           </div>
-        <% } else { %>
-          <span>Logged in as: <%= username %></span>
-          <button class="btn btn-outline-dark">Logout</button>
-        <% } %>
-
+        </div>
       </form>
-    </div>
+    <% } else { %>
+
+      <form method="POST" action="/logout">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text text-dark" id="">Logged In As: <%= username %></span>
+          </div>
+          <button class="btn btn-danger btn-outline-dark" type="submit">Logout</button>
+        </div>
+      </form>
+    <% } %>
+
   </nav>
 </header>
