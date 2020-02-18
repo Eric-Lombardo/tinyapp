@@ -43,20 +43,20 @@ app.post("/urls", (req, res) => {
 
 // when editing the long url
 app.post("/urls/:shortURL/update", (req, res) => {
-  // let longURL = req.body.longURL
-  console.log(req.body);
+  let userInput = req.body.userInput;
+  let shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = userInput;
+  res.redirect("/urls");
 })
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
-
   if (urlDatabase[shortURL]) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
     res.render("urls_show", templateVars);
   } else {
     res.send("That tiny URL isn't in our database");
   }
-
 })
 
 // this shortURL will redirect you to the longURL
