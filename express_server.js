@@ -57,6 +57,13 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+// this will handle deleting urls
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+})
+
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n")
