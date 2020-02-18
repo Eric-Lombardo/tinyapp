@@ -12,13 +12,20 @@
     </div>
     
     <!-- header form  -->
-    <form method="POST" action="/login">
-      <div class="input-group input-group-sm mb-3">
-        <input name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
-        <div class="input-group-append">
-          <button class="btn btn-outline-dark" type="submit">Login</button>
-        </div>
-      </div>
-    </form>
+    <div class="input-group input-group-sm mb-3">
+      
+      <form method="POST" action="/login">
+        <% if (username === undefined) { %>
+          <input name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
+          <div class="input-group-append">
+            <button class="btn btn-outline-dark" type="submit">Login</button>
+          </div>
+        <% } else { %>
+          <span>Logged in as: <%= username %></span>
+          <button class="btn btn-outline-dark">Logout</button>
+        <% } %>
+
+      </form>
+    </div>
   </nav>
 </header>
