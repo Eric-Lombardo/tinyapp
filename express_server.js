@@ -38,6 +38,22 @@ const users = {
 
 
 
+
+
+// get user's personal urls
+function getURLsbyUserId(userId, urlDatabase) {
+  let outputURLs = {};
+
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === userId) {
+      outputURLs[urlDatabase[url]];
+    }
+  }
+  return outputURLs;
+}
+
+
+
 //----------------- starter data above -------------------
 
 app.get("/", (req, res) => {
@@ -50,8 +66,15 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let userCookie = req.cookies.user_id;
+  let userURLs = getURLsbyUserId(userCookie, urlDatabase)
   let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
-  res.render("urls_index", templateVars)
+
+  // if user is not logged in ask them to login/register
+  if (!users[userCookie]) {
+    res.render("login_register_splash", templateVars)
+  } else {
+    res.render("urls_index", templateVars);
+  }
 })
 
 // this path will take you to a form
@@ -85,9 +108,9 @@ app.post("/urls", (req, res) => {
 
 // when editing the long url
 app.post("/urls/:shortURL/update", (req, res) => {
-  let userInput = req.body.userInput;
+  let newLongURL = req.body.newLongURL;
   let shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = userInput;
+  urlDatabase[shortURL].longURL = newLongURL;
   res.redirect("/urls");
 })
 

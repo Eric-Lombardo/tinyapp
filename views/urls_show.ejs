@@ -22,11 +22,12 @@
         <!-- adding form -->
         <form method="POST" action="/urls/<%= shortURL %>/update">
           <h3>Edit</h3>
+          <p><strong>Must include "http://"</strong></p>
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon1">New URL: </span>
+              <span class="input-group-text" id="basic-addon1">Edit Long URL: </span>
             </div>
-            <input name="userInput" type="text" class="form-control" placeholder="<%= longURL[shortURL].longURL %>" aria-describedby="basic-addon1">
+            <input name="newLongURL" type="text" class="form-control" placeholder="<%= longURL[shortURL].longURL %>" aria-describedby="basic-addon1">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit" id="button-addon2" name="longURL">Submit</button>
               </div>
