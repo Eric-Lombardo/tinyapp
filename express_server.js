@@ -98,6 +98,11 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 })
 
+// for new registrations
+app.get("/register", (req, res) => {
+  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  res.render("urls_register", templateVars);
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
