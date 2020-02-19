@@ -13,10 +13,32 @@ app.use(bodyParser.urlencoded({extended: true}));
 // setting the view engine
 app.set("view engine", "ejs");
 
+// ---------------- npm requires above--------------------
+
+// ----------------- starter data below ----------------------
+
+// starter data to work with
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 }
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@g.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@g.com", 
+    password: "dishwasher-funk"
+  }
+}
+
+
+
+//----------------- starter data above -------------------
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -104,16 +126,42 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 })
 
+// getting back filled out registration form
+app.post("/register", (req, res) => {
+  let userId = generateRandomString();
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+  
+  if (!checkEmailExists(userEmail, users)) {
+    // add to user DB
+    users[userId] = {
+      id: userId,
+      email: userEmail,
+      password: userPassword
+    }
+  
+    // send the intial cookie upon registration
+    res.cookie("user_id", userId);
+    res.redirect("/urls");   
+  } else {
+    res.status(400);
+    res.send("nu-huh nice try hacker, you won't get any info from me! This username may or may not be already taken and the password may or maynot be strong enough to create an account");
+  }
+})
+
+
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
 
 
-
+// ------------ helper fucntions below ---------------------
 
 
 // placeholder function to simulate a "unique" shortURL
-// function declaration to amke sure it gets hoisted to the top
+// function declaration to make sure it gets hoisted to the top
 function generateRandomString() {
   let alphaNumData = ["a", "b", "c", "d", "e", "f", 1, 2, 3, 4, 5, 6, 7];
   let outputStr = "";
@@ -125,3 +173,15 @@ function generateRandomString() {
 
   return outputStr;
 }
+
+// check if an email already exists in the database (db)
+function checkEmailExists(email, db) {
+  for (let user in db) {
+    if (db[user].email === email) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
