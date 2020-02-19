@@ -128,7 +128,7 @@ app.post("/login", (req, res) => {
 
 // deletes username cookie from history
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 })
 
