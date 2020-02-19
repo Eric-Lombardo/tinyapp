@@ -49,7 +49,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let userCookie = req.cookies.user_id;
   let userURLs = getURLsbyUserId(userCookie, urlDatabase)
-  console.log(userURLs);
   let templateVars = { urls: userURLs, userInfo: users[userCookie] };
 
   // if user is not logged in ask them to login/register
@@ -100,15 +99,27 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let userCookie = req.cookies.user_id;
-  if (urlDatabase[shortURL]) {
+
+  // check to see if url exists in DB
+  if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userCookie) {
     let templateVars = { 
       shortURL: req.params.shortURL, 
       longURL: urlDatabase,
       userInfo: users[userCookie] 
     };
     res.render("urls_show", templateVars);
+  } else if (urlDatabase[shortURL] && urlDatabase[shortURL].userID !== userCookie && userCookie) {
+    // when url/:shortURL is true but it doesn't belong to this user and userCookie is defined
+    let userCookie = req.cookies.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    res.render("not_your_URL", templateVars);
   } else {
-    res.send("That tiny URL isn't in our database");
+    // when urls/:shortURL doesn't exist
+    let userCookie = req.cookies.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    res.render("tinyURL_not_in_DB", templateVars);
   }
 })
 
