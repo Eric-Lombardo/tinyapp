@@ -90,10 +90,22 @@ app.post("/urls", (req, res) => {
 
 // when editing the long url
 app.post("/urls/:shortURL/update", (req, res) => {
+  let userCookie = req.cookies.user_id;
   let newLongURL = req.body.newLongURL;
   let shortURL = req.params.shortURL;
-  urlDatabase[shortURL].longURL = newLongURL;
-  res.redirect("/urls");
+
+  // allow edit if it belongs to user
+  if (urlDatabase[shortURL].userID === userCookie) {
+    urlDatabase[shortURL].longURL = newLongURL;
+    res.redirect("/urls");
+  } else {
+    // do not allow it
+    let userCookie = req.cookies.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
+    res.status(403);
+    res.render("not_your_URL", templateVars)
+  }
 })
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -137,9 +149,21 @@ app.get("/u/:shortURL", (req, res) => {
 
 // this will handle deleting urls
 app.post("/urls/:shortURL/delete", (req, res) => {
+  let userCookie = req.cookies.user_id;
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+
+  // if the url requested to be deleted is by the user allow it
+  if(urlDatabase[shortURL].userID === userCookie) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    // do not allow it
+    let userCookie = req.cookies.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    res.status(403);
+    res.render("not_your_URL", templateVars);
+  }
 })
 
 // this will handle the login post and COOOOKIES!!!!
