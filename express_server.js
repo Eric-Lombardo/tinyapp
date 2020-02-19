@@ -36,24 +36,6 @@ const users = {
   }
 }
 
-
-
-
-
-// get user's personal urls
-function getURLsbyUserId(userId, urlDatabase) {
-  let outputURLs = {};
-
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === userId) {
-      outputURLs[urlDatabase[url]];
-    }
-  }
-  return outputURLs;
-}
-
-
-
 //----------------- starter data above -------------------
 
 app.get("/", (req, res) => {
@@ -67,7 +49,8 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let userCookie = req.cookies.user_id;
   let userURLs = getURLsbyUserId(userCookie, urlDatabase)
-  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
+  console.log(userURLs);
+  let templateVars = { urls: userURLs, userInfo: users[userCookie] };
 
   // if user is not logged in ask them to login/register
   if (!users[userCookie]) {
@@ -259,4 +242,19 @@ function getUserIdWithEmail(email, db) {
       return db[user].id;
     }
   }
+}
+
+// get user's personal urls
+function getURLsbyUserId(userId, urlDatabase) {
+  let outputURLs = {};
+
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === userId) {
+      outputURLs[url] = {
+        longURL: urlDatabase[url].longURL,
+        userID: urlDatabase[url].userID
+      }
+    }
+  }
+  return outputURLs;
 }
