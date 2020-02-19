@@ -121,12 +121,12 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     res.status(403);
-    res.send("nu-huh nice try hacker, you won't get any info from me! This username may or may not be already taken and the password may or maynot be strong enough to create an account");
+    res.send("nu-huh nice try hacker, you won't get any info from me! This email may or may not be already taken and the password may or maynot be strong enough to create an account");
   }
 
 })
 
-// deletes username cookie from history
+// deletes user_id cookie from history
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
@@ -158,7 +158,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");   
   } else {
     res.status(400);
-    res.send("nu-huh nice try hacker, you won't get any info from me! This username may or may not be already taken and the password may or maynot be strong enough to create an account");
+    res.send("nu-huh nice try hacker, you won't get any info from me! This email may or may not be already taken and the password may or maynot be strong enough to create an account");
   }
 })
 
