@@ -58,7 +58,14 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let userCookie = req.cookies.user_id;
   let templateVars = { userInfo: users[userCookie] };
-  res.render("urls_new", templateVars);
+
+  // checks if user is registered/logged in or else takes them back
+  // to the login page
+  if (users[userCookie]) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // this will handle the post request from the /urls/new form
