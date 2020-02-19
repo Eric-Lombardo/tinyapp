@@ -15,7 +15,7 @@
   <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL[shortURL] %></h5>
+        <h5 class="card-title">TinyURL for: <%= longURL[shortURL].longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>   
       </div>
       <div class="card-footer text-muted">
@@ -26,7 +26,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1">New URL: </span>
             </div>
-            <input name="userInput" type="text" class="form-control" placeholder="<%= longURL[shortURL] %>" aria-describedby="basic-addon1">
+            <input name="userInput" type="text" class="form-control" placeholder="<%= longURL[shortURL].longURL %>" aria-describedby="basic-addon1">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit" id="button-addon2" name="longURL">Submit</button>
               </div>

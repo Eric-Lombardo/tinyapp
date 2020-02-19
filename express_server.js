@@ -19,9 +19,9 @@ app.set("view engine", "ejs");
 
 // starter data to work with
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-}
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+};
 
 const users = { 
   "userRandomID": {
@@ -70,11 +70,18 @@ app.get("/urls/new", (req, res) => {
 
 // this will handle the post request from the /urls/new form
 app.post("/urls", (req, res) => {
-  // update urlDatabase with {shortURL: longURL} with every post request
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+
+  // update urlDatabase with every POST request
+  // attach user's cookie ID to the shortURL object
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.user_id
+  }
+
   res.redirect(`/urls/${shortURL}`);
 });
+
 
 // when editing the long url
 app.post("/urls/:shortURL/update", (req, res) => {
@@ -99,10 +106,11 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 })
 
+
 // this shortURL will redirect you to the longURL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   if (longURL) {
     res.redirect(longURL);
   } else {
