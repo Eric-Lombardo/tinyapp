@@ -112,9 +112,18 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // this will handle the login post and COOOOKIES!!!!
 app.post("/login", (req, res) => {
-  let userInputUsername = req.body.username;
-  res.cookie("username", userInputUsername);
-  res.redirect("/urls");
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+
+  if (checkLoginIsRight(userEmail, userPassword, users)) {
+    let userCookieId = getUserIdWithEmail(userEmail, users);
+    res.cookie("user_id", userCookieId);
+    res.redirect("/urls");
+  } else {
+    res.status(403);
+    res.send("nu-huh nice try hacker, you won't get any info from me! This username may or may not be already taken and the password may or maynot be strong enough to create an account");
+  }
+
 })
 
 // deletes username cookie from history
@@ -195,4 +204,21 @@ function checkEmailExists(email, db) {
   return false;
 }
 
+// checks if both email and password is correct
+function checkLoginIsRight(email, password, db) {
+  for (let user in db) {
+    if (checkEmailExists(email, db) && db[user].password === password) {
+      return true;
+    }
+  }
+  return false;
+}
 
+// get user id with only email
+function getUserIdWithEmail(email, db) {
+  for (let user in db) {
+    if (db[user].email === email) {
+      return db[user].id;
+    }
+  }
+}
