@@ -11,17 +11,15 @@
       </div>
     </div>
     
-    <!-- header form  -->
+    <!-- header login/register/logout button links  -->
     
     <% if (userInfo === undefined) { %>
-      <form method="POST" action="/login">
         <div class="input-group">
-          <input required name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
           <div class="input-group-append">
-            <button class="btn btn-dark text-white btn-outline-dark" type="submit">Login</button>
+            <a href="/login"><button class="btn btn-primary text-white btn-outline-dark" type="button">Login</button></a>
+            <a href="/register"><button class="btn btn-secondary text-white btn-outline-dark" type="button">Register</button></a>
           </div>
         </div>
-      </form>
     <% } else { %>
 
       <form method="POST" action="/logout">
