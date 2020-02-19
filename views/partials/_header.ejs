@@ -13,7 +13,7 @@
     
     <!-- header form  -->
     
-    <% if (username === undefined) { %>
+    <% if (userInfo === undefined) { %>
       <form method="POST" action="/login">
         <div class="input-group">
           <input required name="username" type="text" class="form-control" placeholder="Write username here" aria-label="Username" aria-describedby="basic-addon1">
@@ -27,7 +27,7 @@
       <form method="POST" action="/logout">
         <div class="input-group">
           <div class="input-group-prepend">
-            <span class="input-group-text text-dark" id="">Logged In As: <%= username %></span>
+            <span class="input-group-text text-dark" id="">Logged In As: <%= userInfo.email %></span>
           </div>
           <button class="btn btn-danger btn-outline-dark" type="submit">Logout</button>
         </div>

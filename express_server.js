@@ -49,13 +49,15 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  let userCookie = req.cookies.user_id;
+  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
   res.render("urls_index", templateVars)
 })
 
 // this path will take you to a form
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let userCookie = req.cookies.user_id;
+  let templateVars = { userInfo: users[userCookie] };
   res.render("urls_new", templateVars);
 });
 
@@ -77,11 +79,12 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
+  let userCookie = req.cookies.user_id;
   if (urlDatabase[shortURL]) {
     let templateVars = { 
       shortURL: req.params.shortURL, 
       longURL: urlDatabase,
-      username: req.cookies["username"] 
+      userInfo: users[userCookie] 
     };
     res.render("urls_show", templateVars);
   } else {
@@ -122,7 +125,8 @@ app.post("/logout", (req, res) => {
 
 // for new registrations
 app.get("/register", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  let userCookie = req.cookies.user_id;
+  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
   res.render("urls_register", templateVars);
 })
 
@@ -147,6 +151,11 @@ app.post("/register", (req, res) => {
     res.status(400);
     res.send("nu-huh nice try hacker, you won't get any info from me! This username may or may not be already taken and the password may or maynot be strong enough to create an account");
   }
+})
+
+// for logging in
+app.get("/login", (req, res) => {
+  res.render("urls_login");
 })
 
 
