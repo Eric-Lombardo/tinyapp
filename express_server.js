@@ -155,7 +155,9 @@ app.post("/register", (req, res) => {
 
 // for logging in
 app.get("/login", (req, res) => {
-  res.render("urls_login");
+  let userCookie = req.cookies.user_id;
+  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
+  res.render("urls_login", templateVars);
 })
 
 
