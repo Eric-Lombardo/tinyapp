@@ -177,7 +177,7 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     res.status(403);
-    res.send("nu-huh nice try hacker, you won't get any info from me! This email may or may not be already taken and the password may or maynot be strong enough to create an account");
+    res.redirect("/register");
   }
 
 })
