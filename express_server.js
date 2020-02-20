@@ -191,8 +191,11 @@ app.post("/login", (req, res) => {
     req.session.user_id = userCookieId;
     res.redirect("/urls");
   } else {
+    let userCookie = req.session.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] }; 
     res.status(403);
-    res.redirect("/register");
+    res.render("bad_guy", templateVars);
   }
 
 })
