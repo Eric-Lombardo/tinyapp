@@ -152,11 +152,14 @@ app.get("/urls/:shortURL", (req, res) => {
 // this shortURL will redirect you to the longURL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  if (longURL) {
-    res.redirect(longURL);
+  const longURL = urlDatabase[shortURL];
+  const userCookie = req.session.user_id;
+  const userURLs = getURLsbyUserId(userCookie, urlDatabase)
+  const templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+  if (longURL === undefined) {
+    res.render("tinyURL_not_in_DB", templateVars);
   } else {
-    res.send("I don't think the shortURL is in our DATABASE!")
+    res.redirect(longURL.longURL);
   }
 });
 
@@ -185,7 +188,6 @@ app.post("/login", (req, res) => {
 
   if (checkLoginIsRight(userEmail, userPassword, users)) {
     let userCookieId = getUserIdWithEmail(userEmail, users);
-    // res.cookie("user_id", userCookieId);
     req.session.user_id = userCookieId;
     res.redirect("/urls");
   } else {
@@ -236,7 +238,14 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   let userCookie = req.session.user_id;
   let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
-  res.render("urls_login", templateVars);
+
+  // if user is logged in redirect to /urls
+  if (users[userCookie]) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
+
 })
 
 
