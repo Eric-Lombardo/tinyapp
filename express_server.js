@@ -47,7 +47,14 @@ const users = {
 //----------------- starter data above -------------------
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  let userCookie = req.session.user_id;
+  // if user is not logged in
+  if (!users[userCookie]) {
+    res.redirect("/login")
+  } else {
+    // if they are
+    res.redirect("/urls");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
