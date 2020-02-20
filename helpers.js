@@ -7,4 +7,4 @@ const getUserIdWithEmail = function(email, db) {
   }
 }
 
-module.export = { getUserIdWithEmail };
+module.exports.getUserIdWithEmail = getUserIdWithEmail;

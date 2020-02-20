@@ -1,10 +1,11 @@
+const { getUserIdWithEmail } = require("./helpers")
 const cookieSession = require("cookie-session")
 const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
-const getUserIdWithEmail = require("./helpers")
 const app = express();
 const PORT = 8080;
+
 
 app.use(cookieSession({
   name: 'session',
