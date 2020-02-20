@@ -1,5 +1,5 @@
-const { getUserIdWithEmail } = require("./helpers")
-const cookieSession = require("cookie-session")
+const { getUserIdWithEmail } = require("./helpers");
+const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
@@ -13,7 +13,7 @@ app.use(cookieSession({
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 // for use with bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended: true}));
@@ -25,7 +25,7 @@ app.set("view engine", "ejs");
 
 // ----------------- starter data below ----------------------
 
-// starter data to work with
+// starter data to work with acting as DB
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
@@ -237,7 +237,6 @@ app.post("/register", (req, res) => {
     res.status(400);
     res.render("bad_guy_register", templateVars);
   }
-  console.log(users);
 })
 
 // for logging in
