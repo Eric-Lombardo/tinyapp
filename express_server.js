@@ -44,7 +44,9 @@ const users = {
   }
 }
 
-//----------------- starter data above -------------------
+//----------------- starter data above ---------------------------------
+
+//----------------- GET routes below ----------------------------------
 
 app.get("/", (req, res) => {
   let userCookie = req.session.user_id;
@@ -89,40 +91,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-// this will handle the post request from the /urls/new form
-app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-
-  // update urlDatabase with every POST request
-  // attach user's cookie ID to the shortURL object
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL,
-    userID: req.session.user_id
-  }
-
-  res.redirect(`/urls/${shortURL}`);
-});
-
-
-// when editing the long url
-app.post("/urls/:shortURL/update", (req, res) => {
-  let userCookie = req.session.user_id;
-  let newLongURL = req.body.newLongURL;
-  let shortURL = req.params.shortURL;
-
-  // allow edit if it belongs to user
-  if (urlDatabase[shortURL].userID === userCookie) {
-    urlDatabase[shortURL].longURL = newLongURL;
-    res.redirect("/urls");
-  } else {
-    // do not allow it
-    // let userCookie = req.session.user_id;
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
-    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
-    res.status(403);
-    res.render("not_your_URL", templateVars)
-  }
-})
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
@@ -162,6 +130,66 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL.longURL);
   }
 });
+
+// for new registrations
+app.get("/register", (req, res) => {
+  let userCookie = req.session.user_id;
+  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
+  res.render("urls_register", templateVars);
+})
+
+// for logging in
+app.get("/login", (req, res) => {
+  let userCookie = req.session.user_id;
+  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
+
+  // if user is logged in redirect to /urls
+  if (users[userCookie]) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
+
+})
+
+//------------------- GET routes above -------------------------------
+
+//------------------- POST routes below -------------------------------
+
+// this will handle the post request from the /urls/new form
+app.post("/urls", (req, res) => {
+  let shortURL = generateRandomString();
+
+  // update urlDatabase with every POST request
+  // attach user's cookie ID to the shortURL object
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: req.session.user_id
+  }
+  
+  res.redirect(`/urls/${shortURL}`);
+});
+
+
+// when editing the long url
+app.post("/urls/:shortURL/update", (req, res) => {
+  let userCookie = req.session.user_id;
+  let newLongURL = req.body.newLongURL;
+  let shortURL = req.params.shortURL;
+
+  // allow edit if it belongs to user
+  if (urlDatabase[shortURL].userID === userCookie) {
+    urlDatabase[shortURL].longURL = newLongURL;
+    res.redirect("/urls");
+  } else {
+    // do not allow it
+    // let userCookie = req.session.user_id;
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
+    res.status(403);
+    res.render("not_your_URL", templateVars)
+  }
+})
 
 // this will handle deleting urls
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -207,12 +235,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 })
 
-// for new registrations
-app.get("/register", (req, res) => {
-  let userCookie = req.session.user_id;
-  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
-  res.render("urls_register", templateVars);
-})
 
 // getting back filled out registration form
 app.post("/register", (req, res) => {
@@ -239,21 +261,7 @@ app.post("/register", (req, res) => {
   }
 })
 
-// for logging in
-app.get("/login", (req, res) => {
-  let userCookie = req.session.user_id;
-  let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
-
-  // if user is logged in redirect to /urls
-  if (users[userCookie]) {
-    res.redirect("/urls");
-  } else {
-    res.render("urls_login", templateVars);
-  }
-
-})
-
-
+// ---------------- POST routes above ------------------------------
 
 
 app.listen(PORT, () => {
@@ -261,11 +269,10 @@ app.listen(PORT, () => {
 });
 
 
-// ------------ helper fucntions below ---------------------
+// ------------ helper functions below ---------------------
 
 
-// placeholder function to simulate a "unique" shortURL
-// function declaration to make sure it gets hoisted to the top
+// uniqueID generator to create shortURL signature
 function generateRandomString() {
   let alphaNumData = ["a", "b", "c", "d", "e", "f", 1, 2, 3, 4, 5, 6, 7];
   let outputStr = "";
@@ -297,8 +304,6 @@ function checkLoginIsRight(email, password, db) {
   }
   return false;
 }
-
-
 
 // get user's personal urls
 function getURLsbyUserId(userId, urlDatabase) {
