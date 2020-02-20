@@ -1,4 +1,14 @@
+// ---------- tinyApp Server--------------
+//-----------------------------------------
+
+// helper function modules
 const { getUserIdWithEmail } = require("./helpers");
+const { generateRandomString } = require("./helpers");
+const { checkEmailExists } = require("./helpers");
+const { checkLoginIsRight } = require("./helpers");
+const { getURLsbyUserId } = require("./helpers");
+
+// npm modules
 const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -6,11 +16,10 @@ const bcrypt = require("bcrypt");
 const app = express();
 const PORT = 8080;
 
-
+// for use with cookie-session = require("cookie-session")
 app.use(cookieSession({
   name: 'session',
   keys: ["crazy grasshopper"],
-
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
@@ -21,8 +30,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // setting the view engine
 app.set("view engine", "ejs");
 
-// ---------------- npm requires above--------------------
-
+// ---------------- setup above --------------------
 // ----------------- starter data below ----------------------
 
 // starter data to work with acting as DB
@@ -31,28 +39,27 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@g.com", 
+    id: "userRandomID",
+    email: "user@g.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@g.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@g.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 //----------------- starter data above ---------------------------------
-
 //----------------- GET routes below ----------------------------------
 
 app.get("/", (req, res) => {
   let userCookie = req.session.user_id;
   // if user is not logged in
   if (!users[userCookie]) {
-    res.redirect("/login")
+    res.redirect("/login");
   } else {
     // if they are
     res.redirect("/urls");
@@ -65,17 +72,17 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let userCookie = req.session.user_id;
-  let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+  let userURLs = getURLsbyUserId(userCookie, urlDatabase);
   let templateVars = { urls: userURLs, userInfo: users[userCookie] };
 
   // if user is not logged in ask them to login/register
   if (!users[userCookie]) {
-    res.render("login_register_splash", templateVars)
+    res.render("login_register_splash", templateVars);
     res.status(403);
   } else {
     res.render("urls_index", templateVars);
   }
-})
+});
 
 // this path will take you to a form
 app.get("/urls/new", (req, res) => {
@@ -91,30 +98,29 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let userCookie = req.session.user_id;
-  let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+  let userURLs = getURLsbyUserId(userCookie, urlDatabase);
 
   // check to see if url exists in DB
   if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userCookie) {
-    let templateVars = { 
-      shortURL: req.params.shortURL, 
+    let templateVars = {
+      shortURL: req.params.shortURL,
       longURL: urlDatabase,
-      userInfo: users[userCookie] 
+      userInfo: users[userCookie]
     };
     res.render("urls_show", templateVars);
   } else if (urlDatabase[shortURL] && urlDatabase[shortURL].userID !== userCookie && userCookie) {
     // when url/:shortURL is true but it doesn't belong to this user and userCookie is defined
-    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.render("not_your_URL", templateVars);
   } else {
     // when urls/:shortURL doesn't exist
-    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.render("tinyURL_not_in_DB", templateVars);
   }
-})
+});
 
 
 // this shortURL will redirect you to the longURL
@@ -122,8 +128,8 @@ app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
   const userCookie = req.session.user_id;
-  const userURLs = getURLsbyUserId(userCookie, urlDatabase)
-  const templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+  const userURLs = getURLsbyUserId(userCookie, urlDatabase);
+  const templateVars = { urls: userURLs, userInfo: users[userCookie] };
   if (longURL === undefined) {
     res.render("tinyURL_not_in_DB", templateVars);
   } else {
@@ -136,7 +142,7 @@ app.get("/register", (req, res) => {
   let userCookie = req.session.user_id;
   let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
   res.render("urls_register", templateVars);
-})
+});
 
 // for logging in
 app.get("/login", (req, res) => {
@@ -149,11 +155,9 @@ app.get("/login", (req, res) => {
   } else {
     res.render("urls_login", templateVars);
   }
-
-})
+});
 
 //------------------- GET routes above -------------------------------
-
 //------------------- POST routes below -------------------------------
 
 // this will handle the post request from the /urls/new form
@@ -165,8 +169,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: req.session.user_id
-  }
-  
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -183,13 +186,12 @@ app.post("/urls/:shortURL/update", (req, res) => {
     res.redirect("/urls");
   } else {
     // do not allow it
-    // let userCookie = req.session.user_id;
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase);
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.status(403);
-    res.render("not_your_URL", templateVars)
+    res.render("not_your_URL", templateVars);
   }
-})
+});
 
 // this will handle deleting urls
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -197,17 +199,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
 
   // if the url requested to be deleted is by the user allow it
-  if(urlDatabase[shortURL].userID === userCookie) {
+  if (urlDatabase[shortURL].userID === userCookie) {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
   } else {
     // do not allow it
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
-    let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase);
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.status(403);
     res.render("not_your_URL", templateVars);
   }
-})
+});
 
 // this will handle the login post and COOOOKIES!!!!
 app.post("/login", (req, res) => {
@@ -220,21 +222,19 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     let userCookie = req.session.user_id;
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
-    let templateVars = { urls: userURLs, userInfo: users[userCookie] }; 
+    let userURLs = getURLsbyUserId(userCookie, urlDatabase);
+    let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.status(403);
     res.render("bad_guy", templateVars);
   }
-
-})
+});
 
 // deletes user_id cookie from history
 app.post("/logout", (req, res) => {
   // res.clearCookie("user_id");
   req.session = null;
   res.redirect("/urls");
-})
-
+});
 
 // getting back filled out registration form
 app.post("/register", (req, res) => {
@@ -249,73 +249,22 @@ app.post("/register", (req, res) => {
       id: userId,
       email: userEmail,
       password: hashedPassword
-    }
+    };
     // send the intial cookie upon registration
     req.session.user_id = userId;
-    res.redirect("/urls");   
+    res.redirect("/urls");
   } else {
     let userCookie = req.session.user_id;
     let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
     res.status(400);
     res.render("bad_guy_register", templateVars);
   }
-})
+});
 
 // ---------------- POST routes above ------------------------------
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
 
 
-// ------------ helper functions below ---------------------
-
-
-// uniqueID generator to create shortURL signature
-function generateRandomString() {
-  let alphaNumData = ["a", "b", "c", "d", "e", "f", 1, 2, 3, 4, 5, 6, 7];
-  let outputStr = "";
-
-  for (let i = 0; i < 6; i++) {
-    let randomCharacter = Math.floor(Math.random() * alphaNumData.length);
-    outputStr += alphaNumData[randomCharacter];
-  }
-
-  return outputStr;
-}
-
-// check if an email already exists in the database (db)
-function checkEmailExists(email, db) {
-  for (let user in db) {
-    if (db[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// checks if both email and password is correct
-function checkLoginIsRight(email, password, db) {
-  for (let user in db) {
-    if (checkEmailExists(email, db) && bcrypt.compareSync(password, db[user].password)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// get user's personal urls
-function getURLsbyUserId(userId, urlDatabase) {
-  let outputURLs = {};
-
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === userId) {
-      outputURLs[url] = {
-        longURL: urlDatabase[url].longURL,
-        userID: urlDatabase[url].userID
-      }
-    }
-  }
-  return outputURLs;
-}
