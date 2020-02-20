@@ -1,3 +1,4 @@
+const cookieSession = require("cookie-session")
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -7,6 +8,14 @@ const PORT = 8080;
 
 // for use with cookieParser = require("cookieParser")
 app.use(cookieParser());
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ["crazy grasshopper"],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // for use with bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended: true}));
