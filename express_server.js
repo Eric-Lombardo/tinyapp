@@ -232,9 +232,12 @@ app.post("/register", (req, res) => {
     req.session.user_id = userId;
     res.redirect("/urls");   
   } else {
+    let userCookie = req.session.user_id;
+    let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
     res.status(400);
-    res.send("nu-huh nice try hacker, you won't get any info from me! This email may or may not be already taken and the password may or maynot be strong enough to create an account");
+    res.render("bad_guy_register", templateVars);
   }
+  console.log(users);
 })
 
 // for logging in
