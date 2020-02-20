@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
 const app = express();
 const PORT = 8080;
 
@@ -200,15 +201,15 @@ app.post("/register", (req, res) => {
   let userId = generateRandomString();
   let userEmail = req.body.email;
   let userPassword = req.body.password;
+  let hashedPassword = bcrypt.hashSync(userPassword, 10);
   
   if (!checkEmailExists(userEmail, users)) {
     // add to user DB
     users[userId] = {
       id: userId,
       email: userEmail,
-      password: userPassword
+      password: hashedPassword
     }
-  
     // send the intial cookie upon registration
     res.cookie("user_id", userId);
     res.redirect("/urls");   
@@ -263,7 +264,7 @@ function checkEmailExists(email, db) {
 // checks if both email and password is correct
 function checkLoginIsRight(email, password, db) {
   for (let user in db) {
-    if (checkEmailExists(email, db) && db[user].password === password) {
+    if (checkEmailExists(email, db) && bcrypt.compareSync(password, db[user].password)) {
       return true;
     }
   }
