@@ -2,6 +2,7 @@ const cookieSession = require("cookie-session")
 const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const getUserIdWithEmail = require("./helpers")
 const app = express();
 const PORT = 8080;
 
@@ -274,14 +275,7 @@ function checkLoginIsRight(email, password, db) {
   return false;
 }
 
-// get user id with only email
-function getUserIdWithEmail(email, db) {
-  for (let user in db) {
-    if (db[user].email === email) {
-      return db[user].id;
-    }
-  }
-}
+
 
 // get user's personal urls
 function getURLsbyUserId(userId, urlDatabase) {
