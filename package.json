@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./node_modules/.bin/nodemon -L express_server.js"
   },
   "repository": {
     "type": "git",
