@@ -57,7 +57,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   let userURLs = getURLsbyUserId(userCookie, urlDatabase)
   let templateVars = { urls: userURLs, userInfo: users[userCookie] };
 
@@ -71,7 +71,7 @@ app.get("/urls", (req, res) => {
 
 // this path will take you to a form
 app.get("/urls/new", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   let templateVars = { userInfo: users[userCookie] };
 
   // checks if user is registered/logged in or else takes them back
@@ -91,7 +91,7 @@ app.post("/urls", (req, res) => {
   // attach user's cookie ID to the shortURL object
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    userID: req.cookies.user_id
+    userID: req.session.user_id
   }
 
   res.redirect(`/urls/${shortURL}`);
@@ -100,7 +100,7 @@ app.post("/urls", (req, res) => {
 
 // when editing the long url
 app.post("/urls/:shortURL/update", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   let newLongURL = req.body.newLongURL;
   let shortURL = req.params.shortURL;
 
@@ -110,7 +110,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
     res.redirect("/urls");
   } else {
     // do not allow it
-    let userCookie = req.cookies.user_id;
+    let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.status(403);
@@ -120,7 +120,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
 
   // check to see if url exists in DB
   if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userCookie) {
@@ -132,13 +132,13 @@ app.get("/urls/:shortURL", (req, res) => {
     res.render("urls_show", templateVars);
   } else if (urlDatabase[shortURL] && urlDatabase[shortURL].userID !== userCookie && userCookie) {
     // when url/:shortURL is true but it doesn't belong to this user and userCookie is defined
-    let userCookie = req.cookies.user_id;
+    let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.render("not_your_URL", templateVars);
   } else {
     // when urls/:shortURL doesn't exist
-    let userCookie = req.cookies.user_id;
+    let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.render("tinyURL_not_in_DB", templateVars);
@@ -159,7 +159,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // this will handle deleting urls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   const shortURL = req.params.shortURL;
 
   // if the url requested to be deleted is by the user allow it
@@ -168,7 +168,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect("/urls");
   } else {
     // do not allow it
-    let userCookie = req.cookies.user_id;
+    let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.status(403);
@@ -183,7 +183,8 @@ app.post("/login", (req, res) => {
 
   if (checkLoginIsRight(userEmail, userPassword, users)) {
     let userCookieId = getUserIdWithEmail(userEmail, users);
-    res.cookie("user_id", userCookieId);
+    // res.cookie("user_id", userCookieId);
+    req.session.user_id = userCookieId;
     res.redirect("/urls");
   } else {
     res.status(403);
@@ -194,20 +195,21 @@ app.post("/login", (req, res) => {
 
 // deletes user_id cookie from history
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  // res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 })
 
 // for new registrations
 app.get("/register", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
   res.render("urls_register", templateVars);
 })
 
 // getting back filled out registration form
 app.post("/register", (req, res) => {
-  let userId = generateRandomString();
+  let userId = bcrypt.hashSync(generateRandomString(), 10);
   let userEmail = req.body.email;
   let userPassword = req.body.password;
   let hashedPassword = bcrypt.hashSync(userPassword, 10);
@@ -220,7 +222,8 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     }
     // send the intial cookie upon registration
-    res.cookie("user_id", userId);
+    // res.cookie("user_id", userId);
+    req.session.user_id = userId;
     res.redirect("/urls");   
   } else {
     res.status(400);
@@ -230,7 +233,7 @@ app.post("/register", (req, res) => {
 
 // for logging in
 app.get("/login", (req, res) => {
-  let userCookie = req.cookies.user_id;
+  let userCookie = req.session.user_id;
   let templateVars = { urls: urlDatabase, userInfo: users[userCookie] };
   res.render("urls_login", templateVars);
 })
