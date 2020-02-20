@@ -1,13 +1,9 @@
 const cookieSession = require("cookie-session")
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const app = express();
 const PORT = 8080;
-
-// for use with cookieParser = require("cookieParser")
-app.use(cookieParser());
 
 app.use(cookieSession({
   name: 'session',
@@ -110,7 +106,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
     res.redirect("/urls");
   } else {
     // do not allow it
-    let userCookie = req.session.user_id;
+    // let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };
     res.status(403);
@@ -121,6 +117,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let userCookie = req.session.user_id;
+  let userURLs = getURLsbyUserId(userCookie, urlDatabase)
 
   // check to see if url exists in DB
   if (urlDatabase[shortURL] && urlDatabase[shortURL].userID === userCookie) {
@@ -132,14 +129,10 @@ app.get("/urls/:shortURL", (req, res) => {
     res.render("urls_show", templateVars);
   } else if (urlDatabase[shortURL] && urlDatabase[shortURL].userID !== userCookie && userCookie) {
     // when url/:shortURL is true but it doesn't belong to this user and userCookie is defined
-    let userCookie = req.session.user_id;
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.render("not_your_URL", templateVars);
   } else {
     // when urls/:shortURL doesn't exist
-    let userCookie = req.session.user_id;
-    let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.render("tinyURL_not_in_DB", templateVars);
   }
@@ -168,7 +161,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect("/urls");
   } else {
     // do not allow it
-    let userCookie = req.session.user_id;
     let userURLs = getURLsbyUserId(userCookie, urlDatabase)
     let templateVars = { urls: userURLs, userInfo: users[userCookie] };    
     res.status(403);
@@ -222,7 +214,6 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     }
     // send the intial cookie upon registration
-    // res.cookie("user_id", userId);
     req.session.user_id = userId;
     res.redirect("/urls");   
   } else {
