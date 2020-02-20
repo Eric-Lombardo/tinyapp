@@ -69,6 +69,7 @@ app.get("/urls", (req, res) => {
   // if user is not logged in ask them to login/register
   if (!users[userCookie]) {
     res.render("login_register_splash", templateVars)
+    res.status(403);
   } else {
     res.render("urls_index", templateVars);
   }
