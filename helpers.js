@@ -43,6 +43,14 @@ const checkLoginIsRight = function(email, password, db) {
   return false;
 };
 
+// create timestamp string
+const getTimeStamp = function() {
+  let time = new Date();
+  time = String(time);
+  time = time.substring(0, 15);
+  return time;
+}
+
 // get user's personal urls
 const getURLsbyUserId = function(userId, urlDatabase) {
   let outputURLs = {};
@@ -51,7 +59,8 @@ const getURLsbyUserId = function(userId, urlDatabase) {
     if (urlDatabase[url].userID === userId) {
       outputURLs[url] = {
         longURL: urlDatabase[url].longURL,
-        userID: urlDatabase[url].userID
+        userID: urlDatabase[url].userID,
+        timeStamp: getTimeStamp()
       };
     }
   }
@@ -64,3 +73,4 @@ module.exports.generateRandomString = generateRandomString;
 module.exports.checkEmailExists = checkEmailExists;
 module.exports.checkLoginIsRight = checkLoginIsRight;
 module.exports.getURLsbyUserId = getURLsbyUserId;
+module.exports.getTimeStamp = getTimeStamp;

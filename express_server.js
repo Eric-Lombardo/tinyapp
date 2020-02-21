@@ -7,6 +7,7 @@ const { generateRandomString } = require("./helpers");
 const { checkEmailExists } = require("./helpers");
 const { checkLoginIsRight } = require("./helpers");
 const { getURLsbyUserId } = require("./helpers");
+const { getTimeStamp } = require("./helpers");
 
 // npm modules
 const cookieSession = require("cookie-session");
@@ -163,13 +164,16 @@ app.get("/login", (req, res) => {
 // this will handle the post request from the /urls/new form
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
+  let time = getTimeStamp();
 
   // update urlDatabase with every POST request
   // attach user's cookie ID to the shortURL object
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    userID: req.session.user_id
+    userID: req.session.user_id,
+    timeCreated: time,
   };
+
   res.redirect(`/urls/${shortURL}`);
 });
 
